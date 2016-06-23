@@ -109,6 +109,36 @@ class WordVectors(object):
         best_metrics = metrics[best]
         return best, best_metrics
 
+    def get_sum_word_vector(self, words):
+        combined = None
+        for word in words:
+            try:
+                word_vector = self[word].T
+                if combined is None:
+                    combined = word_vector
+                else:
+                    combined = np.add(combined, word_vector)
+            except:
+                pass
+        if combined is not None:
+            combined = combined / np.linalg.norm(combined)
+        return combined
+
+    def exclude_words_from_result_vector(self, best, words):
+        exclude_idx = [np.where(best == self.ix(word)) for word in words if
+                       self.ix(word) in best]
+        best = np.delete(best, exclude_idx)
+        return best
+
+    def cosine_multi(self, words, n=10):
+        combined = self.get_sum_word_vector(words) if len(words) > 1 else self[words[0]].T
+        metrics = np.dot(self.vectors, combined)
+        best = np.argsort(metrics)[::-1][1:n+len(words)]
+        if len(words) > 1:
+            best = self.exclude_words_from_result_vector(best, words)
+        best_metrics = metrics[best]
+        return best, best_metrics
+
     def analogy(self, pos, neg, n=10):
         """
         Analogy similarity.
