@@ -109,20 +109,26 @@ class WordVectors(object):
         best_metrics = metrics[best]
         return best, best_metrics
 
-    def get_sum_word_vector(self, words):
+    def get_sum_vector(self, vectors):
         combined = None
-        for word in words:
-            try:
-                word_vector = self[word].T
-                if combined is None:
-                    combined = word_vector
-                else:
-                    combined = np.add(combined, word_vector)
-            except:
-                pass
+        for vector in vectors:
+            if combined is None:
+                combined = vector
+            else:
+                combined = np.add(combined, vector)
         if combined is not None:
             combined = combined / np.linalg.norm(combined)
         return combined
+
+    def safe_get_vector(self, word):
+        try:
+            return self[word].T
+        except:
+            return None
+
+    def get_sum_word_vector(self, words):
+        vectors = filter(None, [self.safe_get_vector(word) for word in words])
+        return self.get_sum_vector(vectors)
 
     def exclude_words_from_result_vector(self, best, words):
         exclude_idx = [np.where(best == self.ix(word)) for word in words if
