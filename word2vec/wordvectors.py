@@ -127,7 +127,7 @@ class WordVectors(object):
             return None
 
     def get_sum_word_vector(self, words):
-        vectors = filter(lambda x: x is not None, 
+        vectors = filter(lambda x: x is not None,
                          [self.safe_get_vector(word) for word in words])
         return self.get_sum_vector(vectors)
 
@@ -145,6 +145,11 @@ class WordVectors(object):
             best = self.exclude_words_from_result_vector(best, words)
         best_metrics = metrics[best]
         return best, best_metrics
+
+    def cosine_raw(self, words, n=10):
+        combined = self.get_sum_word_vector(words) if len(words) > 1 else self[words[0]].T
+        metrics = np.dot(self.vectors, combined)
+        return metrics
 
     def analogy(self, pos, neg, n=10):
         """
