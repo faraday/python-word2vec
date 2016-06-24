@@ -147,9 +147,12 @@ class WordVectors(object):
         return best, best_metrics
 
     def cosine_raw(self, words, n=10):
-        combined = self.get_sum_word_vector(words) if len(words) > 1 else self[words[0]].T
-        metrics = np.dot(self.vectors, combined)
-        return metrics
+        combined = self.get_sum_word_vector(words) if len(words) > 1 \
+            else self.safe_get_vector(words[0])
+        if combined is not None:
+            metrics = np.dot(self.vectors, combined)
+            return metrics
+        return None
 
     def analogy(self, pos, neg, n=10):
         """
