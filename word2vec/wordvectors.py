@@ -195,12 +195,12 @@ class WordVectors(object):
         returned by `self.cosine` and `self.analogy`
         '''
         if self.clusters and clusters:
-            return np.rec.fromarrays((self.vocab[indexes], metrics,
-                                     self.clusters.clusters[indexes]),
-                                     names=('word', 'metric', 'cluster'))
+            return np.rec.fromarrays((indexes, self.vocab[indexes], metrics,
+                                      self.clusters.clusters[indexes]),
+                                     names=('index', 'word', 'metric', 'cluster'))
         else:
-            return np.rec.fromarrays((self.vocab[indexes], metrics),
-                                     names=('word', 'metric'))
+            return np.rec.fromarrays((indexes, self.vocab[indexes], metrics),
+                                     names=('index', 'word', 'metric'))
 
     def to_mmap(self, fname):
         if not joblib:
