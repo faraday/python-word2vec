@@ -127,7 +127,8 @@ class WordVectors(object):
             return None
 
     def get_sum_word_vector(self, words):
-        vectors = filter(None, [self.safe_get_vector(word) for word in words])
+        vectors = filter(lambda x: x is not None, 
+                         [self.safe_get_vector(word) for word in words])
         return self.get_sum_vector(vectors)
 
     def exclude_words_from_result_vector(self, best, words):
